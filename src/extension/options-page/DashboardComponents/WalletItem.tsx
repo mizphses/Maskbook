@@ -10,6 +10,7 @@ import ActionButton from './ActionButton'
 import { ETH_ADDRESS } from '../../../plugins/Wallet/token'
 import { TokenIcon } from './TokenIcon'
 import type { ERC20TokenDetails, WalletDetails } from '../../background-script/PluginService'
+import { UseMediaQueryDefaultMatches } from '../../../utils/constants'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -112,7 +113,7 @@ export function WalletItem(props: WalletItemProps) {
     const { t } = useI18N()
     const classes = useStyles()
     const xsMatched = useMediaQuery((theme: Theme) => theme.breakpoints.down('xs'), {
-        defaultMatches: webpackEnv.perferResponsiveTarget === 'xs',
+        defaultMatches: UseMediaQueryDefaultMatches,
     })
 
     const { wallet, selected, onClick, tokens } = props

@@ -21,6 +21,7 @@ import { DashboardFeedbackDialog } from '../Dialogs/Feedback'
 import { useI18N } from '../../../utils/i18n-next-ui'
 import { cloneDeep, merge } from 'lodash-es'
 import Logo from './MaskbookLogo'
+import { UseMediaQueryDefaultMatches } from '../../../utils/constants'
 
 interface CarouselProps {
     items: React.ReactElement[]
@@ -156,7 +157,7 @@ export default function Drawer(props: DrawerProps) {
     const match = useRouteMatch('/:param/')
     const forSetupPurpose = match?.url.includes('/setup')
     const xsMatched = useMediaQuery((theme: Theme) => theme.breakpoints.down('xs'), {
-        defaultMatches: webpackEnv.perferResponsiveTarget === 'xs',
+        defaultMatches: UseMediaQueryDefaultMatches,
     })
 
     const { routers, exitDashboard } = props

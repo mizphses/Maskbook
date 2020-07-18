@@ -24,6 +24,7 @@ import { merge, cloneDeep } from 'lodash-es'
 import { useValueRef } from '../../../utils/hooks/useValueRef'
 import { appearanceSettings, Appearance } from '../../../settings/settings'
 import { MaskbookLightTheme, MaskbookDarkTheme } from '../../../utils/theme'
+import { UseMediaQueryDefaultMatches } from '../../../utils/constants'
 
 const Transition = React.forwardRef<unknown, TransitionProps & Pick<FadeProps, 'children'>>(function Transition(
     props,
@@ -55,7 +56,7 @@ export function DashboardDialogCore(props: DashboardDialogCoreProps) {
     const { fullScreen, children, CloseIconProps, CloseButtonProps, ...dialogProps } = props
     const classes = useStyles()
     const xsMatched = useMediaQuery((theme: Theme) => theme.breakpoints.down('xs'), {
-        defaultMatches: webpackEnv.perferResponsiveTarget === 'xs',
+        defaultMatches: UseMediaQueryDefaultMatches,
     })
     useBlurContext(dialogProps.open)
 

@@ -38,6 +38,7 @@ import { grey } from '@material-ui/core/colors'
 import { DashboardSnackbarProvider } from './DashboardComponents/DashboardSnackbar'
 import { SetupStep } from './SetupStep'
 import DashboardNavRouter from './DashboardRouters/Nav'
+import { UseMediaQueryDefaultMatches } from '../../utils/constants'
 
 const useStyles = makeStyles((theme) => {
     const dark = theme.palette.type === 'dark'
@@ -99,7 +100,7 @@ function DashboardUI() {
     const classes = useStyles()
     const history = useHistory<unknown>()
     const xsMatched = useMediaQuery((theme: Theme) => theme.breakpoints.down('xs'), {
-        defaultMatches: webpackEnv.perferResponsiveTarget === 'xs',
+        defaultMatches: UseMediaQueryDefaultMatches,
     })
 
     const routers = ([
@@ -111,7 +112,7 @@ function DashboardUI() {
 
     // jump to persona if needed
     const { loading } = useAsync(async () => {
-        if (webpackEnv.target === 'E2E' && location.hash.includes('noredirect=true')) return
+        if (process.env.target === 'E2E' && location.hash.includes('noredirect=true')) return
         if (location.hash.includes(SetupStep.ConsentDataCollection)) return
         const personas = (await Services.Identity.queryMyPersonas()).filter((x) => !x.uninitialized)
         if (!personas.length) history.replace(`${DashboardRoute.Setup}/${SetupStep.CreatePersona}`)

@@ -30,6 +30,7 @@ import { merge, cloneDeep } from 'lodash-es'
 import { useModal } from '../Dialogs/Base'
 import { EthereumNetwork } from '../../../plugins/Wallet/database/types'
 import { DashboardBackupDialog, DashboardRestoreDialog } from '../Dialogs/Backup'
+import { NoShadowRootSupport } from '../../../utils/constants'
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -188,7 +189,7 @@ export default function DashboardSettingsRouter() {
                                     value={disableOpenNewTabInBackgroundSettings}
                                 />
                                 {/* This feature is not ready for iOS */}
-                                {webpackEnv.target !== 'WKWebview' ? (
+                                {!NoShadowRootSupport ? (
                                     <SettingsUI
                                         classes={listStyle}
                                         icon={shadowRoot ? <EnhancedEncryptionIcon /> : <NoEncryptionIcon />}
