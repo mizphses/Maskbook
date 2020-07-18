@@ -1,12 +1,11 @@
 import { GetContext } from '@holoflows/kit/es'
 import { MessageCenter } from './utils/messages'
 import 'webcrypto-liner'
-import './_background_loader.0'
 import './_background_loader.1'
 import './_background_loader.2'
 import './extension/service'
 import './provider.worker'
-import './network/matrix/instance'
+if (process.env.NODE_ENV === 'development') import('./network/matrix/instance')
 
 import * as PersonaDB from './database/Persona/Persona.db'
 import * as PersonaDBHelper from './database/Persona/helpers'
@@ -25,26 +24,21 @@ import { getWelcomePageURL } from './extension/options-page/Welcome/getWelcomePa
 import { exclusiveTasks } from './extension/content-script/tasks'
 
 if (process.env.NODE_ENV === 'development') {
-    require('./protocols/wallet-provider/metamask-provider')
+    import('./protocols/wallet-provider/metamask-provider')
 }
 
 if (GetContext() === 'background') {
     const injectedScript = getInjectedScript()
-    const contentScripts: Array<{ code: string } | { file: string }> = []
-    const contentScriptReady = fetch('generated__content__script.html')
-        .then((x) => x.text())
-        .then((html) => {
-            const parser = new DOMParser()
-            const root = parser.parseFromString(html, 'text/html')
-            root.querySelectorAll('script').forEach((script) => {
-                if (script.innerText) contentScripts.push({ code: script.innerText })
-                else if (script.src)
-                    contentScripts.push({ file: new URL(script.src, browser.runtime.getURL('')).pathname })
-            })
-        })
+    const contentScripts: Array<{ code: string } | { file: string }> = [
+        { file: '/env.js' },
+        { file: '/patches/firefox-fix.js' },
+        { file: '/polyfills/browser-polyfill.js' },
+        { file: '/loaders/content-script.js' },
+        { file: '/umd_es.js' },
+        { file: '/loaders/content-script-entry.js' },
+    ]
     browser.webNavigation.onCommitted.addListener(async (arg) => {
         if (arg.url === 'about:blank') return
-        await contentScriptReady
         /**
          * For WKWebview, there is a special way to do it in the manifest.json
          *
@@ -88,17 +82,15 @@ if (GetContext() === 'background') {
         }
     })
 
-    contentScriptReady.then(() => {
-        if (webpackEnv.genericTarget === 'facebookApp') {
-            exclusiveTasks('https://m.facebook.com/', { important: true })
-        }
-        exclusiveTasks(getWelcomePageURL({}), { important: true })
-    })
+    if (webpackEnv.genericTarget === 'facebookApp') {
+        exclusiveTasks('https://m.facebook.com/', { important: true })
+    }
+    exclusiveTasks(getWelcomePageURL({}), { important: true })
 }
 async function getInjectedScript() {
     return `{
         const script = document.createElement('script')
-        script.innerHTML = ${await fetch('js/injected-script.js')
+        script.innerHTML = ${await fetch('isolated/injected_script.js')
             .then((x) => x.text())
             .then(JSON.stringify)}
         document.documentElement.appendChild(script)
