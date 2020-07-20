@@ -20,15 +20,7 @@ function webExtensionPolyfill() {
     return src(librariesPath.webExtensionPolyfill.file).pipe(dest(output.polyfills.folder))
 }
 
-const systemJSLoader = parallel(
-    function contentScriptSystemJSLoader() {
-        return src(librariesPath.webExtensionSystemJS.js).pipe(dest(output.loaders.folder))
-    },
-    // function originalSystemJSLoader() {
-    //     return src(librariesPath.originalSystemJS.file).pipe(rename('system.js')).pipe(dest(output.loaders.folder))
-    // },
-)
 export function libs() {
-    return promisify(parallel(ttsclib, webExtensionPolyfill, systemJSLoader))()
+    return promisify(parallel(ttsclib, webExtensionPolyfill))()
 }
 named(libs.name!, 'Copy libraries to the extension folder', libs)

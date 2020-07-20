@@ -1,9 +1,9 @@
-import through2 = require('through2')
+import through2 from 'through2'
 import { promisify } from 'util'
 import type { Configuration } from 'webpack'
-import webpack = require('webpack')
+import webpack from 'webpack'
 import type { TaskFunction } from 'gulp'
-import ts = require('typescript')
+import ts from 'typescript'
 import { getEnvironment } from './env'
 
 export function modifyFile(fn: (x: string) => string) {
@@ -27,14 +27,33 @@ export function getWebpackConfig(
     return {
         mode,
         entry,
-        plugins: [
-            new webpack.EnvironmentPlugin(getEnvironment(mode)),
-            new webpack.optimize.LimitChunkCountPlugin({
-                maxChunks: 1,
-            }),
-        ],
+        plugins: [new webpack.EnvironmentPlugin(getEnvironment(mode))],
         devtool: isDev ? 'cheap-source-map' : false,
-        optimization: { splitChunks: false, minimize: false, runtimeChunk: false },
+        optimization: {
+            minimize: false,
+            runtimeChunk: false,
+            splitChunks: {
+                chunks: 'all',
+                maxInitialRequests: Infinity,
+                minSize: 0,
+                // Our app deliver does not go through http so it will
+                // be helpful to split each npm pkg into a chunk.
+                cacheGroups: {
+                    vendor: {
+                        test: /[\\/]node_modules[\\/]/,
+                        name(module) {
+                            const n = 'node_modules/'
+                            const path = module.context as string
+                            if (path.match('lodash')) return `npm-lodash`
+                            const rest = path.slice(path.indexOf(n) + n.length)
+                            const [a, b] = rest.split('/')
+                            if (a.startsWith('@')) return `npm-${a.replace('@', '')}-${b}`
+                            return `npm-${a}`
+                        },
+                    },
+                },
+            },
+        },
         output: {
             path: distPath,
             globalObject: 'globalThis',
@@ -69,9 +88,11 @@ export function buildWebpackTask(name: string, desc: string, config: (mode: Conf
     const build: TaskFunction = async () => {
         const f = webpack(config('production'))
         const p: webpack.Stats = await promisify(f.run.bind(f))()
+        const log = p.toString({ warningsFilter: (x) => !!x.match(/source map/) })
         if (p.hasErrors()) {
-            throw p.compilation.errors.join('\n')
+            throw new Error(log)
         }
+        console.log(log)
     }
     build.displayName = name
     build.description = `${desc} (build)`

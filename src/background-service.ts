@@ -1,3 +1,4 @@
+import '@magic-works/webextension-systemjs/background-script'
 import { GetContext } from '@holoflows/kit/es'
 import { MessageCenter } from './utils/messages'
 import 'webcrypto-liner'
@@ -27,14 +28,8 @@ import { HasNoBrowserTabUI, HasNativeWelcomeProcess, SupportNativeInjectedScript
 
 if (GetContext() === 'background') {
     const injectedScript = getInjectedScript()
-    const contentScripts: Array<{ code: string } | { file: string }> = [
-        { file: '/env.js' },
-        { file: '/patches/firefox-fix.js' },
-        { file: '/polyfills/browser-polyfill.js' },
-        { file: '/loaders/content-script.js' },
-        { file: '/umd_es.js' },
-        { file: '/loaders/content-script-entry.js' },
-    ]
+    let contentScripts: Promise<Array<{ code: string } | { file: string }>> = getContentScripts()
+
     browser.webNavigation.onCommitted.addListener(async (arg) => {
         if (arg.url === 'about:blank') return
         /**
@@ -51,7 +46,9 @@ if (GetContext() === 'background') {
                     code: process.env.NODE_ENV === 'development' ? await getInjectedScript() : await injectedScript,
                 })
                 .catch(IgnoreError(arg))
-        for (const script of contentScripts) {
+        // refresh every time
+        if (process.env.NODE_ENV === 'development') contentScripts = getContentScripts()
+        for (const script of await contentScripts) {
             const option: browser.extensionTypes.InjectDetails = {
                 runAt: 'document_idle',
                 frameId: arg.frameId,
@@ -81,10 +78,24 @@ if (GetContext() === 'background') {
         }
     })
 
-    if (HasNoBrowserTabUI) {
-        exclusiveTasks('https://m.facebook.com/', { important: true })
-    }
-    exclusiveTasks(getWelcomePageURL({}), { important: true })
+    contentScripts.then(() => {
+        if (HasNoBrowserTabUI) {
+            exclusiveTasks('https://m.facebook.com/', { important: true })
+        }
+        exclusiveTasks(getWelcomePageURL({}), { important: true })
+    })
+}
+async function getContentScripts() {
+    const contentScripts: Array<{ code: string } | { file: string }> = []
+    const x = await fetch('__content__script__.html')
+    const html = await x.text()
+    const parser = new DOMParser()
+    const root = parser.parseFromString(html, 'text/html')
+    root.querySelectorAll('script').forEach((script) => {
+        if (script.innerText) contentScripts.push({ code: script.innerText })
+        else if (script.src) contentScripts.push({ file: new URL(script.src, browser.runtime.getURL('')).pathname })
+    })
+    return contentScripts
 }
 async function getInjectedScript() {
     return `{
