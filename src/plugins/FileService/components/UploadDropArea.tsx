@@ -17,7 +17,7 @@ const useStyles = makeStyles({
         boxSizing: 'border-box',
         borderRadius: 4,
         textAlign: 'center',
-        height: 206,
+        flex: 1,
         padding: 12,
         overflow: 'hidden',
         userSelect: 'none',

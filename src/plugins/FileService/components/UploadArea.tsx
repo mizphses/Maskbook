@@ -1,8 +1,8 @@
+import { Checkbox, FormControlLabel, makeStyles, Typography } from '@material-ui/core'
 import React from 'react'
-import { makeStyles, Grid, FormControlLabel, Checkbox, Typography } from '@material-ui/core'
-import { UploadDropArea } from './UploadDropArea'
 import { MAX_FILE_SIZE } from '../constants'
 import { RecentFiles } from './RecentFiles'
+import { UploadDropArea } from './UploadDropArea'
 
 const LEGAL_TERMS = (
     <a target="_blank" href="https://legal.maskbook.com/arweave/file-service/plugin-terms.html">
@@ -16,6 +16,21 @@ const LEGAL_POLICY = (
 )
 
 const useStyles = makeStyles({
+    container: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: 250,
+    },
+    upload: {
+        flex: 1,
+        display: 'flex',
+    },
+    legal: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        height: 'fit-content',
+    },
     encrypted: {
         userSelect: 'none',
         '& span': {
@@ -24,15 +39,11 @@ const useStyles = makeStyles({
             color: '#3B3B3B',
         },
     },
-    legal: {
+    legalText: {
         userSelect: 'none',
-        display: 'flex',
-        alignItems: 'center',
-        '& p': {
-            fontSize: 12,
-            lineHeight: 1.75,
-            color: '#3B3B3B',
-        },
+        fontSize: 12,
+        lineHeight: 1.75,
+        color: '#3B3B3B',
         '& a': {
             color: '#2CA4EF',
             textDecoration: 'none',
@@ -47,25 +58,21 @@ export const UploadArea: React.FC = () => {
         console.log(file)
     }
     return (
-        <Grid container spacing={1}>
-            <Grid item xs={9}>
+        <section className={classes.container}>
+            <section className={classes.upload}>
                 <UploadDropArea maxFileSize={MAX_FILE_SIZE} onFile={onFile} />
-            </Grid>
-            <Grid item xs={3}>
                 <RecentFiles files={[{ id: '11', name: 'samplesamplesample.txt', createdAt: new Date() }]} />
-            </Grid>
-            <Grid item xs={4}>
+            </section>
+            <section className={classes.legal}>
                 <FormControlLabel
                     control={<Checkbox checked={encrypted} onChange={(event, checked) => setEncrypted(checked)} />}
                     className={classes.encrypted}
                     label="Make it encrypted"
                 />
-            </Grid>
-            <Grid item className={classes.legal}>
-                <Typography>
+                <Typography className={classes.legalText}>
                     By using this plugin, you agree to the {LEGAL_TERMS} and the {LEGAL_POLICY}.
                 </Typography>
-            </Grid>
-        </Grid>
+            </section>
+        </section>
     )
 }
