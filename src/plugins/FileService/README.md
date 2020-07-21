@@ -1,5 +1,13 @@
 # Plugin: File Service
 
+## Feature Set
+
+- [ ] Upload File
+- [ ] Recent Files
+- [ ] File History (Show More)
+- [ ] Insert File via File History
+- [ ] Builit Preview
+
 ## Remote signing
 
 - `arweave/token.json` remote signing public key
