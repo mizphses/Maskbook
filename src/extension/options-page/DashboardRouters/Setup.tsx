@@ -342,15 +342,7 @@ export function ConnectNetwork() {
                         color="primary"
                         disabled={persona?.linkedProfiles.size === 0}
                         onClick={async () => {
-                            await Promise.all([
-                                Services.Identity.setupPersona(persona.identifier),
-                                Services.Plugin.invokePlugin('maskbook.wallet', 'importFirstWallet', {
-                                    name: persona.nickname ?? t('untitled_wallet'),
-                                    mnemonic: persona.mnemonic?.words.split(' '),
-                                    passphrase: '',
-                                    _wallet_is_default: true,
-                                }),
-                            ])
+                            await Services.Identity.setupPersona(persona.identifier)
                             await sleep(300)
                             history.replace(DashboardRoute.Personas)
                         }}>
