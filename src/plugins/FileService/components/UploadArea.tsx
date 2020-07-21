@@ -47,12 +47,12 @@ export const UploadArea: React.FC = () => {
         console.log(file)
     }
     return (
-        <Grid container>
-            <Grid item xs={8}>
+        <Grid container spacing={1}>
+            <Grid item xs={9}>
                 <UploadDropArea maxFileSize={MAX_FILE_SIZE} onFile={onFile} />
             </Grid>
-            <Grid item xs={4}>
-                <RecentFiles files={[{ id: '11', name: 'sample.txt', createdAt: new Date() }]} />
+            <Grid item xs={3}>
+                <RecentFiles files={[{ id: '11', name: 'samplesamplesample.txt', createdAt: new Date() }]} />
             </Grid>
             <Grid item xs={4}>
                 <FormControlLabel

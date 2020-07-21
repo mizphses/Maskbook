@@ -49,7 +49,7 @@ const useStyles = makeStyles({
     },
     title: { marginLeft: 6 },
     container: { width: '100%' },
-    content: { padding: 12 },
+    content: { padding: 12, background: '#fff' },
     insert: {
         justifyContent: 'center',
         background: '#9ED2F7',

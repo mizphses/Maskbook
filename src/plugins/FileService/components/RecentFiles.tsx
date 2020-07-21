@@ -1,13 +1,11 @@
-import { Typography, Container, List, ListItem, ListItemText, makeStyles, Button } from '@material-ui/core'
-import React from 'react'
+import { Button, List, ListItem, ListItemText, makeStyles, Typography } from '@material-ui/core'
 import { map } from 'lodash-es'
-import { formatDateTime } from '../utils'
+import React from 'react'
 import { useHistory } from 'react-router'
+import { formatDateTime } from '../utils'
 
 const useStyles = makeStyles({
     container: {
-        paddingLeft: 10,
-        paddingRight: 10,
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
@@ -41,11 +39,15 @@ const useItemStyles = makeStyles({
 const useItemTextStyles = makeStyles({
     root: {
         margin: 0,
+        marginLeft: 3,
     },
     primary: {
         fontSize: 12,
-        lineHeight: 1.2,
+        lineHeight: 1.1,
         color: '#14171A',
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
     },
     secondary: {
         fontSize: 10,
@@ -70,18 +72,23 @@ export const RecentFiles: React.FC<Props> = ({ files }) => {
     const itemClasses = useItemStyles()
     const itemTextClasses = useItemTextStyles()
     const onClick = (id: string) => () => {
-        history.push(`/file/${id}`)
+        history.push(`/uploaded/${id}`)
     }
     const renderItem = (file: FileInfo, index: number) => (
         <ListItem classes={itemClasses} key={index} onClick={onClick(file.id)}>
-            <ListItemText classes={itemTextClasses} primary={file.name} secondary={formatDateTime(file.createdAt)} />
+            <img src="https://via.placeholder.com/32x32" />
+            <ListItemText
+                classes={itemTextClasses}
+                primary={file.name}
+                secondary={formatDateTime(file.createdAt, true)}
+            />
         </ListItem>
     )
     return (
-        <Container className={classes.container}>
+        <section className={classes.container}>
             <Typography className={classes.heading}>Recent Files</Typography>
             <List className={classes.listing}>{map(files.slice(0, 4), renderItem)}</List>
             <Button className={classes.more}>Show More</Button>
-        </Container>
+        </section>
     )
 }

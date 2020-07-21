@@ -6,7 +6,7 @@ export const Entry: React.FC = () => (
     <MemoryRouter>
         <Route path="/upload" component={UploadArea} />
         <Route path="/uploading" />
-        <Route path="/entry/:id" />
+        <Route path="/uploaded/:id" />
         <Redirect to="/upload" />
     </MemoryRouter>
 )
