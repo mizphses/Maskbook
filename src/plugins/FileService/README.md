@@ -3,10 +3,10 @@
 ## Feature Set
 
 - [ ] Upload File
-- [ ] Recent Files
 - [ ] File History (Show More)
-- [ ] Insert File via File History
 - [ ] Builit Preview
+- [ ] Insert File via Recent Files
+- [ ] Insert File via File History
 
 ## Remote signing
 
@@ -17,7 +17,7 @@
 - <https://github.com/DimensionDev/Maskbook-FileService-LandingPage>
 - <https://github.com/DimensionDev/Maskbook-FileService-RemoteSigning>
 
-## Discussion
+## Related discussion
 
 - <https://github.com/DimensionDev/Maskbook/issues/1057>
 - <https://github.com/DimensionDev/Maskbook-Talks/issues/36>

@@ -1,16 +1,19 @@
 import { Checkbox, FormControlLabel, makeStyles, Typography } from '@material-ui/core'
 import React from 'react'
-import { MAX_FILE_SIZE } from '../constants'
+import { useHistory } from 'react-router'
+import { legalPolicy, legalTerms, MAX_FILE_SIZE } from '../constants'
+import { toUint8Array } from '../utils'
 import { RecentFiles } from './RecentFiles'
 import { UploadDropArea } from './UploadDropArea'
+import { makeAttachment, makeFileKey, makeLandingPage, makePayload } from '../arweave'
 
 const LEGAL_TERMS = (
-    <a target="_blank" href="https://legal.maskbook.com/arweave/file-service/plugin-terms.html">
+    <a target="_blank" href={legalTerms}>
         terms
     </a>
 )
 const LEGAL_POLICY = (
-    <a target="_blank" href="https://legal.maskbook.com/arweave/file-service/privacy-policy-uploader.html">
+    <a target="_blank" href={legalPolicy}>
         privacy policy
     </a>
 )
@@ -51,11 +54,18 @@ const useStyles = makeStyles({
     },
 })
 
-export const UploadArea: React.FC = () => {
+export const Upload: React.FC = () => {
     const classes = useStyles()
+    const history = useHistory()
     const [encrypted, setEncrypted] = React.useState(true)
-    const onFile = (file: File) => {
-        console.log(file)
+    const onFile = async (file: File) => {
+        history.push('/uploading', {
+            key: makeFileKey(),
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            block: toUint8Array(file), // copy
+        })
     }
     return (
         <section className={classes.container}>

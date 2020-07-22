@@ -12,34 +12,37 @@ const instance = Arweave.init({
     protocol: 'https',
 })
 
+export function makeFileKey(length = 16) {
+    let key = ''
+    const table = 'ABDEFGHJKMNPQRTWXYadefhijkmnprstuvwxyz03478'
+    for (let i = 0; i < length; i += 1) {
+        key += table.charAt(Math.floor(Math.random() * table.length))
+    }
+    return key
+}
+
 export interface AttachmentOptions {
-    key?: string
-    block: Uint8Array
+    key?: string | null
     type: string
+    block: Uint8Array
 }
 
 export async function makeAttachment(options: AttachmentOptions) {
     const passphrase = options.key ? new TextEncoder().encode(options.key) : undefined
-    return Attachment.encode(passphrase, {
+    const encoded = await Attachment.encode(passphrase, {
         block: options.block,
         metadata: null,
         mime: options.type,
     })
-}
-
-export async function makePayload(data: Uint8Array, type = 'application/octet-stream') {
-    const transaction = await instance.createTransaction({ data }, token as any)
-    transaction.addTag('Content-Type', type)
-    await sign(transaction)
-    return transaction
+    return makePayload(encoded, options.type)
 }
 
 export interface LandingPageMetadata {
+    key?: string | null
     name: string
     size: number
-    tx: Transaction
-    key?: string
     type: string
+    txId: string
 }
 
 export async function makeLandingPage(metadata: LandingPageMetadata) {
@@ -47,7 +50,7 @@ export async function makeLandingPage(metadata: LandingPageMetadata) {
     const encodedMetadata = JSON.stringify({
         name: metadata.name,
         size: metadata.size,
-        link: `https://arweave.net/${metadata.tx.id}`,
+        link: `https://arweave.net/${metadata.txId}`,
         keyHash,
         createdAt: new Date().toISOString(),
         mime: metadata.type,
@@ -56,9 +59,12 @@ export async function makeLandingPage(metadata: LandingPageMetadata) {
     const text = await response.text()
     const replaced = text.replace('__METADATA__', encodedMetadata)
     const data = new TextEncoder().encode(replaced)
+    return makePayload(data, 'text/html')
+}
 
+async function makePayload(data: Uint8Array, type: string) {
     const transaction = await instance.createTransaction({ data }, token as any)
-    transaction.addTag('Content-Type', 'text/html')
+    transaction.addTag('Content-Type', type)
     await sign(transaction)
     return transaction
 }

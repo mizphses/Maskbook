@@ -14,6 +14,7 @@ import { useStylesExtends } from '../../components/custom-ui-helper'
 import { DialogDismissIconUI } from '../../components/InjectedComponents/DialogDismissIcon'
 import ShadowRootDialog from '../../utils/jss/ShadowRootDialog'
 import { displayName } from './constants'
+import { InsertButton } from './components/InsertButton'
 
 interface Props
     extends withClasses<
@@ -37,25 +38,9 @@ interface Props
 }
 
 const useStyles = makeStyles({
-    MUIInputRoot: {
-        minHeight: 108,
-        flexDirection: 'column',
-        padding: 10,
-        boxSizing: 'border-box',
-    },
-    MUIInputInput: {
-        fontSize: 18,
-        minHeight: '8em',
-    },
     title: { marginLeft: 6 },
     container: { width: '100%' },
     content: { padding: 12, background: '#fff' },
-    insert: {
-        justifyContent: 'center',
-        background: '#9ED2F7',
-        borderRadius: 26,
-        marginTop: 24,
-    },
 })
 
 const MainDialog: React.FC<Props> = (props) => {
@@ -84,9 +69,7 @@ const MainDialog: React.FC<Props> = (props) => {
             <DialogContent className={classes.content}>
                 <Entry />
                 <Grid container justify="center">
-                    <Button className={classes.insert} variant="contained" color="primary" disabled>
-                        Insert
-                    </Button>
+                    <InsertButton disabled />
                 </Grid>
             </DialogContent>
         </ShadowRootDialog>

@@ -1,7 +1,8 @@
-import { Grid, makeStyles, Typography } from '@material-ui/core'
+import { Grid, makeStyles } from '@material-ui/core'
 import React from 'react'
 import { useLocation } from 'react-router'
-import { formatDateTime, formatFileSize } from '../utils'
+import { FilePopover } from './FilePopover'
+import { ProgressBar } from './ProgressBar'
 
 const useStyles = makeStyles({
     container: {
@@ -16,39 +17,35 @@ const useStyles = makeStyles({
     name: {
         fontSize: 16,
         lineHeight: 1.75,
+        textAlign: 'center',
         color: '#3B3B3B',
-        textAlign: 'center',
-    },
-    meta: {
-        fontSize: 14,
-        lineHeight: 1.71,
-        color: '#5D6F88',
-        textAlign: 'center',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+        width: 400,
     },
 })
 
 interface RouteState {
-    id: string
+    key: string
     name: string
     size: number
-    createdAt: Date
+    type: string
+    block: Uint8Array
 }
 
-export const Uploaded: React.FC = () => {
+export const Uploading: React.FC = () => {
     const classes = useStyles()
     const { state } = useLocation<RouteState>()
+    console.log(state)
     return (
         <Grid container className={classes.container}>
             <Grid item>
                 <img src="https://via.placeholder.com/96x120" />
             </Grid>
             <Grid item>
-                <Typography className={classes.name}>{state.name}</Typography>
-                <Typography className={classes.meta}>
-                    <span>{formatFileSize(state.size)}</span>
-                    <span>&nbsp;&nbsp;</span>
-                    <span>{formatDateTime(state.createdAt)}</span>
-                </Typography>
+                <FilePopover name={state.name} size={state.size} />
+                <ProgressBar preparing={false} fileSize={state.size} sendSize={0} startedAt={Date.now()} />
             </Grid>
         </Grid>
     )
