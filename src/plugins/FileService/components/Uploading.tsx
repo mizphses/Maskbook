@@ -1,5 +1,6 @@
 import { Grid, makeStyles } from '@material-ui/core'
 import React from 'react'
+import { useBeforeUnload } from 'react-use'
 import { useLocation } from 'react-router'
 import { FilePopover } from './FilePopover'
 import { ProgressBar } from './ProgressBar'
@@ -27,7 +28,7 @@ const useStyles = makeStyles({
 })
 
 interface RouteState {
-    key: string
+    key: string | undefined
     name: string
     size: number
     type: string
@@ -37,6 +38,7 @@ interface RouteState {
 export const Uploading: React.FC = () => {
     const classes = useStyles()
     const { state } = useLocation<RouteState>()
+    useBeforeUnload(true, 'Uploading can not be canceled')
     console.log(state)
     return (
         <Grid container className={classes.container}>

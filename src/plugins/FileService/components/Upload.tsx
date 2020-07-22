@@ -1,11 +1,11 @@
 import { Checkbox, FormControlLabel, makeStyles, Typography } from '@material-ui/core'
 import React from 'react'
 import { useHistory } from 'react-router'
+import { makeFileKey } from '../arweave'
 import { legalPolicy, legalTerms, MAX_FILE_SIZE } from '../constants'
 import { toUint8Array } from '../utils'
 import { RecentFiles } from './RecentFiles'
 import { UploadDropArea } from './UploadDropArea'
-import { makeAttachment, makeFileKey, makeLandingPage, makePayload } from '../arweave'
 
 const LEGAL_TERMS = (
     <a target="_blank" href={legalTerms}>
@@ -59,8 +59,12 @@ export const Upload: React.FC = () => {
     const history = useHistory()
     const [encrypted, setEncrypted] = React.useState(true)
     const onFile = async (file: File) => {
+        let key
+        if (encrypted) {
+            key = makeFileKey()
+        }
         history.push('/uploading', {
-            key: makeFileKey(),
+            key,
             name: file.name,
             size: file.size,
             type: file.type,
@@ -71,7 +75,7 @@ export const Upload: React.FC = () => {
         <section className={classes.container}>
             <section className={classes.upload}>
                 <UploadDropArea maxFileSize={MAX_FILE_SIZE} onFile={onFile} />
-                <RecentFiles files={[{ id: '11', name: 'samplesamplesample.txt', createdAt: new Date() }]} />
+                <RecentFiles files={[]} />
             </section>
             <section className={classes.legal}>
                 <FormControlLabel

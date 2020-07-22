@@ -1,20 +1,13 @@
-import {
-    DialogContent,
-    DialogProps,
-    DialogTitle,
-    IconButton,
-    makeStyles,
-    Typography,
-    Button,
-    Grid,
-} from '@material-ui/core'
+import { DialogContent, DialogProps, DialogTitle, Grid, IconButton, makeStyles, Typography } from '@material-ui/core'
 import React from 'react'
-import { Entry } from './components'
 import { useStylesExtends } from '../../components/custom-ui-helper'
 import { DialogDismissIconUI } from '../../components/InjectedComponents/DialogDismissIcon'
 import ShadowRootDialog from '../../utils/jss/ShadowRootDialog'
-import { displayName } from './constants'
+import { Entry } from './components'
 import { InsertButton } from './components/InsertButton'
+import { displayName } from './constants'
+import { Exchange, FileInfo } from './hooks/Exchange'
+import { isNil } from 'lodash-es'
 
 interface Props
     extends withClasses<
@@ -45,13 +38,14 @@ const useStyles = makeStyles({
 
 const MainDialog: React.FC<Props> = (props) => {
     const classes = useStylesExtends(useStyles(), props)
+    const [selectedFileInfo, setSelectedFileInfo] = React.useState<FileInfo>()
+    const onInsert = () => {
+        // TODO: insert to post content
+    }
     return (
         <ShadowRootDialog
             className={classes.dialog}
-            classes={{
-                container: classes.container,
-                paper: classes.paper,
-            }}
+            classes={{ container: classes.container, paper: classes.paper }}
             open={props.open}
             scroll="paper"
             fullWidth
@@ -67,10 +61,12 @@ const MainDialog: React.FC<Props> = (props) => {
                 <Typography className={classes.title} display="inline" variant="inherit" children={displayName} />
             </DialogTitle>
             <DialogContent className={classes.content}>
-                <Entry />
-                <Grid container justify="center">
-                    <InsertButton disabled />
-                </Grid>
+                <Exchange onInsert={setSelectedFileInfo}>
+                    <Entry />
+                    <Grid container justify="center">
+                        <InsertButton onClick={onInsert} disabled={isNil(selectedFileInfo)} />
+                    </Grid>
+                </Exchange>
             </DialogContent>
         </ShadowRootDialog>
     )

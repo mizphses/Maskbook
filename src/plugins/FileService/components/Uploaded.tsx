@@ -2,6 +2,7 @@ import { Grid, makeStyles, Typography } from '@material-ui/core'
 import React from 'react'
 import { useLocation } from 'react-router'
 import { formatDateTime, formatFileSize } from '../utils'
+import { FileInfo, useExchange } from '../hooks/Exchange'
 
 const useStyles = makeStyles({
     container: {
@@ -27,16 +28,13 @@ const useStyles = makeStyles({
     },
 })
 
-interface RouteState {
-    id: string
-    name: string
-    size: number
-    createdAt: Date
-}
-
 export const Uploaded: React.FC = () => {
     const classes = useStyles()
-    const { state } = useLocation<RouteState>()
+    const { onInsert } = useExchange()
+    const { state } = useLocation<FileInfo>()
+    React.useEffect(() => {
+        onInsert(state)
+    }, [onInsert, state])
     return (
         <Grid container className={classes.container}>
             <Grid item>

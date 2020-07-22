@@ -2,6 +2,7 @@ import { Button, List, ListItem, ListItemText, makeStyles, Typography } from '@m
 import { map } from 'lodash-es'
 import React from 'react'
 import { useHistory } from 'react-router'
+import type { FileInfo } from '../hooks/Exchange'
 import { formatDateTime } from '../utils'
 
 const useStyles = makeStyles({
@@ -61,22 +62,16 @@ interface Props {
     files: FileInfo[]
 }
 
-export interface FileInfo {
-    id: string
-    name: string
-    createdAt: Date
-}
-
 export const RecentFiles: React.FC<Props> = ({ files }) => {
     const history = useHistory()
     const classes = useStyles()
     const itemClasses = useItemStyles()
     const itemTextClasses = useItemTextStyles()
-    const onClick = (id: string) => () => {
-        history.push(`/uploaded/${id}`)
+    const onClick = (info: FileInfo) => () => {
+        history.push('/uploaded', info)
     }
     const renderItem = (file: FileInfo, index: number) => (
-        <ListItem classes={itemClasses} key={index} onClick={onClick(file.id)}>
+        <ListItem classes={itemClasses} key={index} onClick={onClick(file)}>
             <img src="https://via.placeholder.com/32x32" />
             <ListItemText
                 classes={itemTextClasses}
