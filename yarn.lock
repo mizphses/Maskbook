@@ -2701,10 +2701,10 @@
   optionalDependencies:
     "@jsenv/import-map" "^6.7.2"
 
-"@magic-works/webextension-systemjs@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@magic-works/webextension-systemjs/-/webextension-systemjs-0.0.2.tgz#041d40ab1bc29280dd99dc6f585cd2cb3bd263f5"
-  integrity sha512-XdZPn4eK8EBWxOTnwBowa8R6qNwqQSplsfWnuCx88PF3RQTGbQmKGOUUfYKSX74F+sPCTNTdzPo6AVCiQJYdTQ==
+"@magic-works/webextension-systemjs@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@magic-works/webextension-systemjs/-/webextension-systemjs-0.0.4.tgz#7ead0ec5fa12562517c73b5e2371aea6ac4e65bc"
+  integrity sha512-05V8E7AbKnvXP39kztxQdW+HUEtK6+zrzu1sWyENlONrrkacCtZ2xH3JnASrSdvcMpQ0PJIJapEB4Z7eljP9fA==
 
 "@material-ui/core@4.10.2":
   version "4.10.2"
@@ -20562,12 +20562,7 @@ symbol.prototype.description@^1.0.0:
   dependencies:
     has-symbols "^1.0.0"
 
-systemjs@^6.3.2:
-  version "6.3.3"
-  resolved "https://registry.yarnpkg.com/systemjs/-/systemjs-6.3.3.tgz#c0f2bec5cc72d0b36a8b971b1fa32bfc828b50d4"
-  integrity sha512-djQ6mZ4/cWKnVnhAWvr/4+5r7QHnC7WiA8sS9VuYRdEv3wYZYTIIQv8zPT79PdDSUwfX3bgvu5mZ8eTyLm2YQA==
-
-systemjs@^6.3.3:
+systemjs@^6.3.2, systemjs@^6.3.3:
   version "6.3.3"
   resolved "https://registry.yarnpkg.com/systemjs/-/systemjs-6.3.3.tgz#c0f2bec5cc72d0b36a8b971b1fa32bfc828b50d4"
   integrity sha512-djQ6mZ4/cWKnVnhAWvr/4+5r7QHnC7WiA8sS9VuYRdEv3wYZYTIIQv8zPT79PdDSUwfX3bgvu5mZ8eTyLm2YQA==

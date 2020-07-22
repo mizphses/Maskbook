@@ -31,27 +31,12 @@ export function getWebpackConfig(
         devtool: isDev ? 'cheap-source-map' : false,
         optimization: {
             minimize: false,
+            namedModules: true,
+            namedChunks: true,
             runtimeChunk: false,
             splitChunks: {
-                chunks: 'all',
-                maxInitialRequests: Infinity,
-                minSize: 0,
-                // Our app deliver does not go through http so it will
-                // be helpful to split each npm pkg into a chunk.
-                cacheGroups: {
-                    vendor: {
-                        test: /[\\/]node_modules[\\/]/,
-                        name(module) {
-                            const n = 'node_modules/'
-                            const path = module.context as string
-                            if (path.match('lodash')) return `npm-lodash`
-                            const rest = path.slice(path.indexOf(n) + n.length)
-                            const [a, b] = rest.split('/')
-                            if (a.startsWith('@')) return `npm-${a.replace('@', '')}-${b}`
-                            return `npm-${a}`
-                        },
-                    },
-                },
+                // https://bugs.chromium.org/p/chromium/issues/detail?id=1108199#c2
+                automaticNameDelimiter: '-',
             },
         },
         output: {
@@ -76,7 +61,8 @@ export function getWebpackConfig(
                         transpileOnly: true,
                         compilerOptions: {
                             noEmit: false,
-                            importsNotUsedAsValues: 'remove',
+                            importsNotUsedAsValues: 'preserve',
+                            removeComments: true,
                         },
                     },
                 },

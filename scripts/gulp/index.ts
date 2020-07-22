@@ -13,7 +13,12 @@ import { isolatedBuild, isolatedWatch } from './build-isolated'
 
 function parallelProcessWatch(done: any) {
     return gulpMultiProcess(
-        [dependenciesWatch.displayName, tscESModuleWatch.name, tscSystemWatch.name, workerWatch.displayName],
+        [
+            dependenciesWatch.displayName,
+            tscESModuleWatch.displayName,
+            tscSystemWatch.displayName,
+            workerWatch.displayName,
+        ],
         done,
     )
 }
@@ -49,7 +54,8 @@ export const build = named(
             environmentFile,
             workerBuild,
             isolatedBuild,
-            series(tscESModuleBuild, parallel(tscSystemBuild, dependenciesBuild)),
+            dependenciesBuild,
+            series(tscESModuleBuild, tscSystemBuild),
         ),
     ),
 )
@@ -65,3 +71,4 @@ export * from './tsc'
 export * from './dependencies'
 export * from './build-isolated'
 export * from './libraries'
+export * from './build-worker'

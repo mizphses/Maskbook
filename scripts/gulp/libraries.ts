@@ -19,8 +19,11 @@ const ttsclib = parallel(
 function webExtensionPolyfill() {
     return src(librariesPath.webExtensionPolyfill.file).pipe(dest(output.polyfills.folder))
 }
+function systemJS() {
+    return src(librariesPath.systemJS.jsWithMap).pipe(dest(output.loaders.folder))
+}
 
 export function libs() {
-    return promisify(parallel(ttsclib, webExtensionPolyfill))()
+    return promisify(parallel(ttsclib, webExtensionPolyfill, systemJS))()
 }
 named(libs.name!, 'Copy libraries to the extension folder', libs)

@@ -13,6 +13,10 @@ export default function loader(this: loader.LoaderContext, source: string) {
         },
     }).outputText
 }
+export function transform() {
+    return TreeShakeTransformer(true)
+}
+
 function TreeShakeTransformer<T extends Node>(usingImportCall: boolean): TransformerFactory<T> {
     return (context) => {
         const importCalls: CallExpression[] = []
@@ -85,7 +89,9 @@ function createRegisterFromImport(node: ImportDeclaration) {
  */
 function createRegisterFromImportCall(node: CallExpression) {
     if (!isImportCall(node)) return createEmptyStatement()
-    return createExpressionStatement(createRegisterCall(node))
+    const arg0 = node.arguments[0]
+    if (isStringLiteral(arg0) && arg0.text.startsWith('.')) return createImportDeclaration(void 0, void 0, void 0, arg0)
+    return createExpressionStatement(createRegisterCall(arg0, node))
 }
 /**
  * export { x as y } from 'z'
@@ -139,7 +145,7 @@ function dropLocalImport(node: ImportDeclaration) {
 function dropLocalExport(node: ExportDeclaration) {
     const path = node.moduleSpecifier
     if (!path) return null
-    if (!isIdentifier(path)) return null!
+    if (!isStringLiteral(path)) return null!
     if (node.isTypeOnly) return null
     // export { } from './x' => import './x'
     // export * from './x' => import './x'

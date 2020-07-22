@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, writeFileSync } from 'fs'
-import { join, relative } from 'path'
+import { join, relative, posix } from 'path'
+import { pathToFileURL } from 'url'
 // Source file
 export const srcPath = folder('../../src/')
 export const entries = {
@@ -41,14 +42,25 @@ export const output = {
 export const librariesPath = {
     ttsclib: file('../../node_modules/@magic-works/ttypescript-browser-like-import-transformer/es/ttsclib.js'),
     webExtensionPolyfill: file('../../node_modules/webextension-polyfill/dist/browser-polyfill.js'),
+    systemJS: folder('../../node_modules/@magic-works/webextension-systemjs/'),
 }
 function folder(x: string, path = join(__dirname, x)) {
+    const js = join(path, '**/*.js')
     return {
         folder: path,
         files: join(path, '**/*'),
-        js: join(path, '**/*.js'),
+        js,
+        jsWithMap: [js, join(path, '**/*.map')],
         relative: (x: string) => join(path, x),
         relativeFromCWD: (x: string) => relative(process.cwd(), join(path, x)),
+        relativeFromRuntimeExtensionRoot: (x: string) => {
+            const q = posix.relative(
+                pathToFileURL(output.extension.folder).href,
+                posix.join(pathToFileURL(path).href, x),
+            )
+            if (x.endsWith('/')) return q + '/'
+            return q
+        },
         relativeFolder: (x: string) => folder(x, path),
         ensure() {
             if (!existsSync(path)) mkdirSync(path)

@@ -1,4 +1,3 @@
-import '@magic-works/webextension-systemjs/content-script'
 import './setup.ui'
 import { GetContext } from '@holoflows/kit/es'
 if (GetContext() === 'content') {

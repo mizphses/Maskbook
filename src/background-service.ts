@@ -1,4 +1,3 @@
-import '@magic-works/webextension-systemjs/background-script'
 import { GetContext } from '@holoflows/kit/es'
 import { MessageCenter } from './utils/messages'
 import 'webcrypto-liner'
@@ -37,7 +36,7 @@ if (GetContext() === 'background') {
          *
          * A `iOS-injected-scripts` field is used to add extra scripts
          */
-        if (!SupportNativeInjectedScriptDeclaration)
+        if (!SupportNativeInjectedScriptDeclaration) {
             browser.tabs
                 .executeScript(arg.tabId, {
                     runAt: 'document_start',
@@ -45,7 +44,8 @@ if (GetContext() === 'background') {
                     // refresh it every time in the dev mode so it's easier to debug injected script
                     code: process.env.NODE_ENV === 'development' ? await getInjectedScript() : await injectedScript,
                 })
-                .catch(IgnoreError(arg))
+                .catch((e) => IgnoreError(e, arg))
+        }
         // refresh every time
         if (process.env.NODE_ENV === 'development') contentScripts = getContentScripts()
         for (const script of await contentScripts) {
@@ -54,11 +54,7 @@ if (GetContext() === 'background') {
                 frameId: arg.frameId,
                 ...script,
             }
-            try {
-                await browser.tabs.executeScript(arg.tabId, option)
-            } catch (e) {
-                IgnoreError(e)
-            }
+            await browser.tabs.executeScript(arg.tabId, option).catch((e) => IgnoreError(e, option, arg))
         }
     })
 
@@ -87,7 +83,7 @@ if (GetContext() === 'background') {
 }
 async function getContentScripts() {
     const contentScripts: Array<{ code: string } | { file: string }> = []
-    const x = await fetch('__content__script__.html')
+    const x = await fetch('content-script.html')
     const html = await x.text()
     const parser = new DOMParser()
     const root = parser.parseFromString(html, 'text/html')
@@ -106,18 +102,16 @@ async function getInjectedScript() {
         document.documentElement.appendChild(script)
     }`
 }
-function IgnoreError(arg: unknown): (reason: Error) => void {
-    return (e) => {
-        if (e.message.includes('non-structured-clonable data')) {
-            // It's okay we don't need the result, happened on Firefox
-        } else if (e.message.includes('Frame not found, or missing host permission')) {
-            // It's maybe okay, happened on Firefox
-        } else if (e.message.includes('must request permission')) {
-            // It's okay, we inject to the wrong site and browser rejected it.
-        } else if (e.message.includes('Cannot access a chrome')) {
-            // It's okay, we inject to the wrong site and browser rejected it.
-        } else console.error('Inject error', e, arg, Object.entries(e))
-    }
+function IgnoreError(e: Error, ...args: any) {
+    if (e.message.includes('non-structured-clonable data')) {
+        // It's okay we don't need the result, happened on Firefox
+    } else if (e.message.includes('Frame not found, or missing host permission')) {
+        // It's maybe okay, happened on Firefox
+    } else if (e.message.includes('must request permission')) {
+        // It's okay, we inject to the wrong site and browser rejected it.
+    } else if (e.message.includes('Cannot access a chrome')) {
+        // It's okay, we inject to the wrong site and browser rejected it.
+    } else console.error('Inject error:', e, e.message, ...args)
 }
 
 console.log('Build info', {

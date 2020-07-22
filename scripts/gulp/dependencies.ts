@@ -7,6 +7,7 @@ export const { watch: dependenciesWatch, build: dependenciesBuild } = buildWebpa
     'Build all node style dependencies by Webpack',
     (mode) => {
         const obj = getWebpackConfig(mode, entries, output.libraries.relative('./bundle/'))
+        obj.output!.publicPath = output.libraries.relativeFromRuntimeExtensionRoot('./bundle/')
         // replace ts-loader
         obj.module!.rules[2] = {
             test: /\.(ts|tsx)$/,
@@ -16,7 +17,7 @@ export const { watch: dependenciesWatch, build: dependenciesBuild } = buildWebpa
             // @ts-ignore
             ...newPage({
                 background_page: 'background.html',
-                content_script: '__content__script__.html',
+                content_script: 'content-script.html',
                 options_page: 'index.html',
                 popup_page: 'popup.html',
             }),
